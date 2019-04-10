@@ -1,9 +1,9 @@
-package com.educ_nc_spring_19.chat_engine.model.RestControllers;
+package com.educ_nc_spring_19.chat_engine.controller;
 
-import com.educ_nc_spring_19.chat_engine.model.Entity.Chat;
-import com.educ_nc_spring_19.chat_engine.model.Entity.Member;
-import com.educ_nc_spring_19.chat_engine.model.Repository.ChatRepository;
-import com.educ_nc_spring_19.chat_engine.model.Repository.MemberRepository;
+import com.educ_nc_spring_19.chat_engine.model.entity.Chat;
+import com.educ_nc_spring_19.chat_engine.model.entity.Member;
+import com.educ_nc_spring_19.chat_engine.service.repo.ChatRepository;
+import com.educ_nc_spring_19.chat_engine.service.repo.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

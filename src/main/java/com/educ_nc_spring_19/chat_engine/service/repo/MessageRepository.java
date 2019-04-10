@@ -1,7 +1,7 @@
-package com.educ_nc_spring_19.chat_engine.model.Repository;
+package com.educ_nc_spring_19.chat_engine.service.repo;
 
-import com.educ_nc_spring_19.chat_engine.model.Entity.Chat;
-import com.educ_nc_spring_19.chat_engine.model.Entity.Message;
+import com.educ_nc_spring_19.chat_engine.model.entity.Chat;
+import com.educ_nc_spring_19.chat_engine.model.entity.Message;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.ArrayList;
