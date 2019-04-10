@@ -13,4 +13,7 @@ public interface MessageRepository extends CrudRepository<Message, Long> {
     ArrayList<Message> findById(UUID id);
 
     ArrayList<Message> findByChat(Chat chat);
+
+    boolean existsById(UUID id);
+
 }

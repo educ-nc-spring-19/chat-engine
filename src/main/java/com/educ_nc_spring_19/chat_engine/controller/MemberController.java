@@ -65,6 +65,19 @@ public class MemberController {
         try {
             Chat chat = chatRepository.findById(cid).get(0);
             Member member = new Member(uid, chat);
+            memberRepository.delete(member);
+        } catch (Exception e) {
+            result = "Exception: " + e.getMessage();
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/member/leave", method = RequestMethod.GET, produces = "application/json")
+    public String leaveFromChat(@RequestParam("user_id") UUID uid, @RequestParam("chat_id") UUID cid) {
+        String result = "success";
+        try {
+            Chat chat = chatRepository.findById(cid).get(0);
+            Member member = memberRepository.findByChatAndUserId(chat, uid).get(0);
             member.setDateLeft(OffsetDateTime.now());
             memberRepository.save(member);
         } catch (Exception e) {

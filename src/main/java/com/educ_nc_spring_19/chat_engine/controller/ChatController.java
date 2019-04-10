@@ -36,7 +36,8 @@ public class ChatController {
     @RequestMapping(value = "/chat/all", method = RequestMethod.GET, produces = "application/json")
     public ArrayList<Chat> getAllChat() {
         ArrayList<Chat> result = new ArrayList<>();
-        for (Chat c : chatRepository.findAll()) {
+        Iterable<Chat> allChats = chatRepository.findAll();
+        for (Chat c : allChats) {
             result.add(c);
         }
         return result;

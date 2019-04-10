@@ -11,25 +11,28 @@ import java.util.UUID;
 @Table(name = "Member")
 public class Member {
     @Id
+    @GeneratedValue
     @Column(name = "Id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @org.hibernate.annotations.Type(type = "pg-uuid")
     private UUID id;
 
-    @ManyToOne
-    private Chat chat;
-
     @Column(name = "User_Id", nullable = false)
+    @org.hibernate.annotations.Type(type = "pg-uuid")
     private UUID userId;
 
     @Basic(optional = false)
     @Column(name = "Date_Join", nullable = false, columnDefinition = "timestamp with time zone")
-    @Temporal(TemporalType.TIMESTAMP)
-    private OffsetDateTime dateJoin = OffsetDateTime.now();
+    private OffsetDateTime dateJoin;
 
-    @Basic(optional = false)
-    @Column(name = "Date_Left", columnDefinition = "timestamp with time zone")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Basic(optional = true)
+    @Column(name = "Date_Left", nullable = true, columnDefinition = "timestamp with time zone")
     private OffsetDateTime dateLeft;
+
+    @ManyToOne
+    @JoinColumn(name = "chat_id")
+    private Chat chat;
+
+    public Member() {}
 
     public Member(UUID userId, Chat chat) {
         this.userId = userId;

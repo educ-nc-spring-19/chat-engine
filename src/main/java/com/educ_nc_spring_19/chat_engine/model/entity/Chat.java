@@ -1,10 +1,12 @@
 package com.educ_nc_spring_19.chat_engine.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -12,18 +14,22 @@ import java.util.UUID;
 @Table(name = "Chat")
 public class Chat {
     @Id
+    @GeneratedValue
     @Column(name = "Id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @org.hibernate.annotations.Type(type = "pg-uuid")
     private UUID id;
 
     @Basic(optional = false)
     @Column(name = "Date_Creating", nullable = false, columnDefinition = "timestamp with time zone")
-    @Temporal(TemporalType.TIMESTAMP)
     private OffsetDateTime dateCreating = OffsetDateTime.now();
 
-    @OneToMany
-    private ArrayList<Member> members = new ArrayList<>();
+    @JsonIgnore
+    @OneToMany(mappedBy = "chat")
+    private List<Member> members = new ArrayList<>();
 
-    @OneToMany
-    private ArrayList<Message> messages = new ArrayList<>();
+    @JsonIgnore
+    @OneToMany(mappedBy = "chat")
+    private List<Message> messages= new ArrayList<>();
+
+    public Chat() {}
 }

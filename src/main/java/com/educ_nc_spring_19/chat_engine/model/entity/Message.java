@@ -12,29 +12,31 @@ import java.util.UUID;
 @Data
 @Table(name = "Message")
 public class Message {
-    @Setter
-    @Getter
     @Id
+    @GeneratedValue
     @Column(name = "Id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @org.hibernate.annotations.Type(type = "pg-uuid")
     private UUID id;
-
-    @ManyToOne
-    private Chat chat;
 
     @Column(name = "Text", nullable = false, length = 2056)
     private String text;
 
     @Column(name = "Owner_Id", nullable = false)
+    @org.hibernate.annotations.Type(type = "pg-uuid")
     private UUID ownerId;
 
     @Basic(optional = false)
     @Column(name = "Date_Sending", nullable = false, columnDefinition = "timestamp with time zone")
-    @Temporal(TemporalType.TIMESTAMP)
-    private OffsetDateTime dateSending = OffsetDateTime.now();
+    private OffsetDateTime dateSending;
 
     @Column(name = "Edited")
     private boolean edited;
+
+    @ManyToOne
+    @JoinColumn(name = "chat_id")
+    private Chat chat;
+
+    public Message() {}
 
     public Message (Chat chat, UUID ownerId, String text) {
         this.chat = chat;

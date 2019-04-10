@@ -14,6 +14,8 @@ public interface MemberRepository extends CrudRepository<Member, Long> {
 
     ArrayList<Member> findByChat(Chat chat);
 
+    ArrayList<Member> findByChatAndUserId(Chat chat, UUID uuid);
+
     boolean existsById(UUID id);
 
     boolean existsByChatAndUserId(Chat chat, UUID uuid);
