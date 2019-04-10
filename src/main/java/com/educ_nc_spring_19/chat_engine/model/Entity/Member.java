@@ -3,7 +3,7 @@ package com.educ_nc_spring_19.chat_engine.model.Entity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
@@ -22,12 +22,18 @@ public class Member {
     private UUID userId;
 
     @Basic(optional = false)
-    @Column(name = "Date_Join", nullable = false)
+    @Column(name = "Date_Join", nullable = false, columnDefinition = "timestamp with time zone")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date dateJoin = new Date();
+    private OffsetDateTime dateJoin = OffsetDateTime.now();
 
     @Basic(optional = false)
-    @Column(name = "Date_Left")
+    @Column(name = "Date_Left", columnDefinition = "timestamp with time zone")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date dateLeft;
+    private OffsetDateTime dateLeft;
+
+    public Member(UUID userId, Chat chat) {
+        this.userId = userId;
+        this.chat = chat;
+        this.dateJoin = OffsetDateTime.now();
+    }
 }

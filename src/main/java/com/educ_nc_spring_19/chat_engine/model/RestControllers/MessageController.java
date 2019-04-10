@@ -71,13 +71,48 @@ public class MessageController {
     }
 
     @RequestMapping(value = "/message/send", method = RequestMethod.POST, produces = "application/json")
-    public String getMessagesByChat(@RequestParam("user_id") UUID uid, @RequestParam("chat_id") UUID cid,
+    public String sendMessage(@RequestParam("user_id") UUID uid, @RequestParam("chat_id") UUID cid,
                                                 @RequestParam("text") String text) {
         String result = "success";
         try {
             Chat chat = chatRepository.findById(cid).get(0);
             Message message = new Message(chat, uid, text);
             messageRepository.save(message);
+        } catch (Exception e) {
+            result = "Exception: " + e.getMessage();
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/message/edit", method = RequestMethod.POST, produces = "application/json")
+    public String editMessage(@RequestParam("message_id") UUID mid, @RequestParam("user_id") UUID uid,
+                                    @RequestParam("text") String text) {
+        String result = "success";
+        try {
+            Message message = messageRepository.findById(mid).get(0);
+            if (message.getOwnerId().equals(uid)) {
+                message.setEdited(true);
+                message.setText(text);
+                messageRepository.save(message);
+            } else {
+                result = "This user isn't editing message owner";
+            }
+        } catch (Exception e) {
+            result = "Exception: " + e.getMessage();
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/message/delete", method = RequestMethod.POST, produces = "application/json")
+    public String deleteMessage(@RequestParam("message_id") UUID mid, @RequestParam("user_id") UUID uid) {
+        String result = "success";
+        try {
+            Message message = messageRepository.findById(mid).get(0);
+            if (message.getOwnerId().equals(uid)) {
+                messageRepository.delete(message);
+            } else {
+                result = "This user isn't editing message owner";
+            }
         } catch (Exception e) {
             result = "Exception: " + e.getMessage();
         }
