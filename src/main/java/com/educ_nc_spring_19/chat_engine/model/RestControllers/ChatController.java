@@ -73,4 +73,18 @@ public class ChatController {
         }
         return result;
     }
+
+    @RequestMapping(value = "/chat/members", method = RequestMethod.GET, produces = "application/json")
+    public ArrayList<Member> getChatMembers(@RequestParam("chat_id") UUID cid) {
+        ArrayList<Member> result = new ArrayList<>();
+        if (chatRepository.existsById(cid)) {
+            Chat chat = chatRepository.findById(cid).get(0);
+            for (Member m : chat.getMembers()) {
+                if (m.getDateLeft() == null || m.getDateJoin().isAfter(m.getDateLeft())) {
+                    result.add(m);
+                }
+            }
+        }
+        return result;
+    }
 }
