@@ -1,11 +1,12 @@
-package com.educ_nc_spring_19.chat_engine_service.model.entity;
+package com.educ_nc_spring_19.chat_engine.model.Entity;
 
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -16,7 +17,7 @@ public class Message {
     @Id
     @Column(name = "Id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private UUID id;
 
     @ManyToOne
     private Chat chat;
@@ -25,20 +26,20 @@ public class Message {
     private String text;
 
     @Column(name = "Owner_Id", nullable = false)
-    private long ownerId;
+    private UUID ownerId;
 
     @Basic(optional = false)
-    @Column(name = "Date_Sending", nullable = false)
+    @Column(name = "Date_Sending", nullable = false, columnDefinition = "timestamp with time zone")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date dateSending = new Date();
+    private OffsetDateTime dateSending = OffsetDateTime.now();
 
     @Column(name = "Edited")
     private boolean edited;
 
-    public Message (Chat chat, long ownerId, String text) {
+    public Message (Chat chat, UUID ownerId, String text) {
         this.chat = chat;
         this.ownerId = ownerId;
         this.text = text;
-        this.dateSending = new Date();
+        this.dateSending = OffsetDateTime.now();
     }
 }

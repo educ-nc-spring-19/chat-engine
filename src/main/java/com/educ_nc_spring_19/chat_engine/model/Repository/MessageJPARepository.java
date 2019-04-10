@@ -1,7 +1,7 @@
-package com.educ_nc_spring_19.chat_engine_service.model.repository;
+package com.educ_nc_spring_19.chat_engine.model.Repository;
 
-import com.educ_nc_spring_19.chat_engine_service.model.entity.Chat;
-import com.educ_nc_spring_19.chat_engine_service.model.entity.Message;
+import com.educ_nc_spring_19.chat_engine.model.Entity.Chat;
+import com.educ_nc_spring_19.chat_engine.model.Entity.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

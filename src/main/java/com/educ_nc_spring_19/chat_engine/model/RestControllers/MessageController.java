@@ -1,10 +1,10 @@
-package com.educ_nc_spring_19.chat_engine_service.model.RestControllers;
+package com.educ_nc_spring_19.chat_engine.model.RestControllers;
 
-import com.educ_nc_spring_19.chat_engine_service.model.entity.Chat;
-import com.educ_nc_spring_19.chat_engine_service.model.entity.Message;
-import com.educ_nc_spring_19.chat_engine_service.model.repository.ChatRepository;
-import com.educ_nc_spring_19.chat_engine_service.model.repository.MessageJPARepository;
-import com.educ_nc_spring_19.chat_engine_service.model.repository.MessageRepository;
+import com.educ_nc_spring_19.chat_engine.model.Entity.Chat;
+import com.educ_nc_spring_19.chat_engine.model.Entity.Message;
+import com.educ_nc_spring_19.chat_engine.model.Repository.ChatRepository;
+import com.educ_nc_spring_19.chat_engine.model.Repository.MessageJPARepository;
+import com.educ_nc_spring_19.chat_engine.model.Repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.UUID;
 
 @RestController
 public class MessageController {
@@ -25,7 +26,7 @@ public class MessageController {
     private ChatRepository chatRepository;
 
     @RequestMapping(value = "/message/findById", method = RequestMethod.GET, produces = "application/json")
-    public Message getMessageById(@RequestParam("id") long id) {
+    public Message getMessageById(@RequestParam("id") UUID id) {
         /*Logger logger = LoggerFactory.getLogger(CharacterController.class);
         Double result = characterRepository.findById(id).get(0).getPersMoney();
         logger.info(Double.toString(result)); */
@@ -33,12 +34,12 @@ public class MessageController {
     }
 
     @RequestMapping(value = "/message/findByOwnerId", method = RequestMethod.GET, produces = "application/json")
-    public ArrayList<Message> getMessagesByOwnerId(@RequestParam("owner_id") long id) {
+    public ArrayList<Message> getMessagesByOwnerId(@RequestParam("owner_id") UUID id) {
         return messageRepository.findByOwnerId(id);
     }
 
     @RequestMapping(value = "/message/findByChat", method = RequestMethod.GET, produces = "application/json")
-    public ArrayList<Message> getMessagesByChat(@RequestParam("chat_id") long id) {
+    public ArrayList<Message> getMessagesByChat(@RequestParam("chat_id") UUID id) {
         Chat chat = chatRepository.findById(id).get(0);
         return messageRepository.findByChat(chat);
     }
@@ -53,14 +54,14 @@ public class MessageController {
     }
 
     @RequestMapping(value = "/message/portion", method = RequestMethod.GET, produces = "application/json")
-    public ArrayList<Message> getPortion(@RequestParam("date_sending")Date date, @RequestParam("chat_id") long chatId,
-                                         @RequestParam("id1") long id1,
-                                         @RequestParam("id2") long id2, @RequestParam("id3") long id3,
-                                         @RequestParam("id4") long id4, @RequestParam("id5") long id5) {
+    public ArrayList<Message> getPortion(@RequestParam("date_sending")Date date, @RequestParam("chat_id") UUID chatId,
+                                         @RequestParam("id1") UUID id1,
+                                         @RequestParam("id2") UUID id2, @RequestParam("id3") UUID id3,
+                                         @RequestParam("id4") UUID id4, @RequestParam("id5") UUID id5) {
         Chat chat = chatRepository.findById(chatId).get(0);
         ArrayList<Message> allPreviousMessages = messageJPARepository.findMessagesByDateSendingAndChat(date, chat);
         ArrayList<Message> portion = new ArrayList<>();
-        ArrayList<Long> lastFiveIds = new ArrayList<>(Arrays.asList(id1, id2, id3, id4, id5));
+        ArrayList<UUID> lastFiveIds = new ArrayList<>(Arrays.asList(id1, id2, id3, id4, id5));
         for (int i = 0; i < 30; i++) {
             if (allPreviousMessages.size() >= i && !lastFiveIds.contains(allPreviousMessages.get(i).getId())) {
                 portion.add(allPreviousMessages.get(i));
@@ -70,7 +71,7 @@ public class MessageController {
     }
 
     @RequestMapping(value = "/message/send", method = RequestMethod.POST, produces = "application/json")
-    public String getMessagesByChat(@RequestParam("user_id") long uid, @RequestParam("chat_id") long cid,
+    public String getMessagesByChat(@RequestParam("user_id") UUID uid, @RequestParam("chat_id") UUID cid,
                                                 @RequestParam("text") String text) {
         String result = "success";
         try {

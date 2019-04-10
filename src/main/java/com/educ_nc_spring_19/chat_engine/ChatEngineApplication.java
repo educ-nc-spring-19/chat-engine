@@ -1,4 +1,4 @@
-package com.educ_nc_spring_19.chat_engine_service;
+package com.educ_nc_spring_19.chat_engine;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

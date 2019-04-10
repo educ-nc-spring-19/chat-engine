@@ -1,9 +1,10 @@
-package com.educ_nc_spring_19.chat_engine_service.model.entity;
+package com.educ_nc_spring_19.chat_engine.model.Entity;
 
 import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -12,13 +13,13 @@ public class Member {
     @Id
     @Column(name = "Id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private UUID id;
 
     @ManyToOne
     private Chat chat;
 
     @Column(name = "User_Id", nullable = false)
-    private long userId;
+    private UUID userId;
 
     @Basic(optional = false)
     @Column(name = "Date_Join", nullable = false)
