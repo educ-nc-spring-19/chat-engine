@@ -22,10 +22,11 @@ public class ChatController {
 
     @RequestMapping(value = "/chat/findById", method = RequestMethod.GET, produces = "application/json")
     public Chat getChatById(@RequestParam("id") UUID id) {
-        /*Logger logger = LoggerFactory.getLogger(CharacterController.class);
-        Double result = characterRepository.findById(id).get(0).getPersMoney();
-        logger.info(Double.toString(result)); */
-        return chatRepository.findById(id).get(0);
+        if (chatRepository.existsById(id)) {
+            return chatRepository.findById(id).get(0);
+        } else {
+            return null;
+        }
     }
 
     @RequestMapping(value = "/chat/existsById", method = RequestMethod.GET, produces = "application/json")

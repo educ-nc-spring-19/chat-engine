@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.UUID;
 
 @RestController
@@ -28,9 +27,6 @@ public class MessageController {
 
     @RequestMapping(value = "/message/findById", method = RequestMethod.GET, produces = "application/json")
     public Message getMessageById(@RequestParam("id") UUID id) {
-        /*Logger logger = LoggerFactory.getLogger(CharacterController.class);
-        Double result = characterRepository.findById(id).get(0).getPersMoney();
-        logger.info(Double.toString(result)); */
         if (messageRepository.existsById(id)) {
             return messageRepository.findById(id).get(0);
         } else {
@@ -38,15 +34,9 @@ public class MessageController {
         }
     }
 
-    @RequestMapping(value = "/message/findByOwnerId", method = RequestMethod.GET, produces = "application/json")
-    public ArrayList<Message> getMessagesByOwnerId(@RequestParam("owner_id") UUID id) {
-        return messageRepository.findByOwnerId(id);
-    }
-
-    @RequestMapping(value = "/message/findByChat", method = RequestMethod.GET, produces = "application/json")
-    public ArrayList<Message> getMessagesByChat(@RequestParam("chat_id") UUID id) {
-        Chat chat = chatRepository.findById(id).get(0);
-        return messageRepository.findByChat(chat);
+    @RequestMapping(value = "/message/existsById", method = RequestMethod.GET, produces = "application/json")
+    public boolean existsMessageById(@RequestParam("id") UUID id) {
+        return messageRepository.existsById(id);
     }
 
     @RequestMapping(value = "/message/all", method = RequestMethod.GET, produces = "application/json")
@@ -58,22 +48,45 @@ public class MessageController {
         return result;
     }
 
+    @RequestMapping(value = "/message/findByOwnerId", method = RequestMethod.GET, produces = "application/json")
+    public ArrayList<Message> getMessagesByOwnerId(@RequestParam("owner_id") UUID id) {
+        return messageRepository.findByOwnerId(id);
+    }
+
+    @RequestMapping(value = "/message/findByChat", method = RequestMethod.GET, produces = "application/json")
+    public ArrayList<Message> getMessagesByChat(@RequestParam("chat_id") UUID id) {
+        if (chatRepository.existsById(id)) {
+            Chat chat = chatRepository.findById(id).get(0);
+            return messageRepository.findByChat(chat);
+        } else {
+            return null;
+        }
+    }
+
     @RequestMapping(value = "/message/portion", method = RequestMethod.GET, produces = "application/json")
     public ArrayList<Message> getPortion(@RequestParam("date_sending") String datestr,
                                          @RequestParam("chat_id") UUID chatId, @RequestParam("id1") UUID id1,
                                          @RequestParam("id2") UUID id2, @RequestParam("id3") UUID id3,
                                          @RequestParam("id4") UUID id4, @RequestParam("id5") UUID id5) {
-        Chat chat = chatRepository.findById(chatId).get(0);
-        OffsetDateTime date = OffsetDateTime.parse(datestr);
-        ArrayList<Message> allPreviousMessages = messageJPARepository.findMessagesByDateSendingAndChat_Id(date, chat.getId());
-        ArrayList<Message> portion = new ArrayList<>();
-        ArrayList<UUID> lastFiveIds = new ArrayList<>(Arrays.asList(id1, id2, id3, id4, id5));
-        for (int i = 0; i < 30; i++) {
-            if (allPreviousMessages.size() > i && !lastFiveIds.contains(allPreviousMessages.get(i).getId())) {
-                portion.add(allPreviousMessages.get(i));
+        try {
+            if (chatRepository.existsById(chatId)) {
+                Chat chat = chatRepository.findById(chatId).get(0);
+                OffsetDateTime date = OffsetDateTime.parse(datestr);
+                ArrayList<Message> allPreviousMessages = messageJPARepository.findMessagesByDateSendingAndChat_Id(date, chat.getId());
+                ArrayList<Message> portion = new ArrayList<>();
+                ArrayList<UUID> lastFiveIds = new ArrayList<>(Arrays.asList(id1, id2, id3, id4, id5));
+                for (int i = 0; i < 30; i++) {
+                    if (allPreviousMessages.size() > i && !lastFiveIds.contains(allPreviousMessages.get(i).getId())) {
+                        portion.add(allPreviousMessages.get(i));
+                    }
+                }
+                return portion;
+            } else {
+                return null;
             }
+        } catch (Exception e) {
+            return null;
         }
-        return portion;
     }
 
     @RequestMapping(value = "/message/send", method = RequestMethod.POST, produces = "application/json")

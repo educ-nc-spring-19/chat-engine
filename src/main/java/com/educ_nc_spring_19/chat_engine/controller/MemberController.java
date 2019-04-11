@@ -23,10 +23,25 @@ public class MemberController {
 
     @RequestMapping(value = "/member/findById", method = RequestMethod.GET, produces = "application/json")
     public Member getMemberById(@RequestParam("id") UUID id) {
-        /*Logger logger = LoggerFactory.getLogger(CharacterController.class);
-        Double result = characterRepository.findById(id).get(0).getPersMoney();
-        logger.info(Double.toString(result)); */
-        return memberRepository.findById(id).get(0);
+        if (memberRepository.existsById(id)) {
+            return memberRepository.findById(id).get(0);
+        } else {
+            return null;
+        }
+    }
+
+    @RequestMapping(value = "/member/existsById", method = RequestMethod.GET, produces = "application/json")
+    public boolean existsMemberById(@RequestParam("id") UUID id) {
+        return memberRepository.existsById(id);
+    }
+
+    @RequestMapping(value = "/member/all", method = RequestMethod.GET, produces = "application/json")
+    public ArrayList<Member> getAllMembers() {
+        ArrayList<Member> result = new ArrayList<>();
+            for (Member m : memberRepository.findAll()) {
+            result.add(m);
+        }
+        return result;
     }
 
     @RequestMapping(value = "/member/findByUserId", method = RequestMethod.GET, produces = "application/json")
@@ -36,11 +51,15 @@ public class MemberController {
 
     @RequestMapping(value = "/member/findByChat", method = RequestMethod.GET, produces = "application/json")
     public ArrayList<Member> getMemberByChatId(@RequestParam("id") UUID id) {
-        Chat chat = chatRepository.findById(id).get(0);
-        return memberRepository.findByChat(chat);
+        if(chatRepository.existsById(id)) {
+            Chat chat = chatRepository.findById(id).get(0);
+            return memberRepository.findByChat(chat);
+        } else {
+            return null;
+        }
     }
 
-    @RequestMapping(value = "/member/add", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/member/add", method = RequestMethod.POST, produces = "application/json")
     public String addMember(@RequestParam("user_id") UUID uid, @RequestParam("chat_id") UUID cid) {
         String result = "success";
         try {
@@ -59,7 +78,7 @@ public class MemberController {
         return result;
     }
 
-    @RequestMapping(value = "/member/remove", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/member/remove", method = RequestMethod.POST, produces = "application/json")
     public String removeMember(@RequestParam("user_id") UUID uid, @RequestParam("chat_id") UUID cid) {
         String result = "success";
         try {
@@ -72,7 +91,7 @@ public class MemberController {
         return result;
     }
 
-    @RequestMapping(value = "/member/leave", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/member/leave", method = RequestMethod.POST, produces = "application/json")
     public String leaveFromChat(@RequestParam("user_id") UUID uid, @RequestParam("chat_id") UUID cid) {
         String result = "success";
         try {
