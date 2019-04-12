@@ -29,9 +29,23 @@ public class ChatController {
         }
     }
 
+    @RequestMapping(value = "/chat/findByOwnerId", method = RequestMethod.GET, produces = "application/json")
+    public Chat getChatByOwnerId(@RequestParam("id") UUID id) {
+        if (chatRepository.existsByHostId(id)) {
+            return chatRepository.findByHostId(id).get(0);
+        } else {
+            return null;
+        }
+    }
+
     @RequestMapping(value = "/chat/existsById", method = RequestMethod.GET, produces = "application/json")
     public boolean existsChatById(@RequestParam("id") UUID id) {
         return chatRepository.existsById(id);
+    }
+
+    @RequestMapping(value = "/chat/existsByOwerId", method = RequestMethod.GET, produces = "application/json")
+    public boolean existsChatByOwnerId(@RequestParam("id") UUID id) {
+        return chatRepository.existsByHostId(id);
     }
 
     @RequestMapping(value = "/chat/all", method = RequestMethod.GET, produces = "application/json")
@@ -45,10 +59,11 @@ public class ChatController {
     }
 
     @RequestMapping(value = "/chat/create", method = RequestMethod.GET, produces = "application/json")
-    public String addChat(@RequestParam("user_id") UUID uid) {
+    public String addChat(@RequestParam("owner_id") UUID oid, @RequestParam("user_id") UUID uid) {
         String result = "success";
         try {
             Chat chat = new Chat();
+            chat.setHostId(oid);
             chatRepository.save(chat);
             Member member = new Member(uid, chat);
             memberRepository.save(member);
@@ -58,22 +73,34 @@ public class ChatController {
         return result;
     }
 
-    @RequestMapping(value = "/chat/open", method = RequestMethod.GET, produces = "application/json")
-    public String addChat(@RequestParam("user_id") UUID uid, @RequestParam("chat_id") UUID cid) {
-        String result = "success";
+    @RequestMapping(value = "/chat/openByChatId", method = RequestMethod.GET, produces = "application/json")
+    public Chat openChatById(@RequestParam("user_id") UUID uid, @RequestParam("chat_id") UUID cid) {
         try {
-            Chat chat = chatRepository.findById(cid).get(0);
-            //тут должен быть рест апи, может ли юзер открыть этот чат (котёл может только сотрудник котла)
-            //и запрос, существует ли этот чат уже вообще (инфа хранится у юзера / котла / пула чат_id != null),
-            // мб его делать придётся методом выше, но для этого мне надо будет залезть в md
-            if (!memberRepository.existsByChatAndUserId(chat, uid)) {
-                Member member = new Member(uid, chat);
-                memberRepository.save(member);
+            if (chatRepository.existsById(cid)) {
+                Chat chat = chatRepository.findById(cid).get(0);
+                //тут должен быть рест апи, может ли юзер открыть этот чат (котёл может только сотрудник котла)
+                if (!memberRepository.existsByChatAndUserId(chat, uid)) {
+                    Member member = new Member(uid, chat);
+                    memberRepository.save(member);
+                }
+                return chat;
             }
         } catch (Exception e) {
-            result = "Exception: " + e.getMessage();
+            return null; //"Exception: " + e.getMessage();
         }
-        return result;
+        return null;
+    }
+
+    @RequestMapping(value = "/chat/openByHost", method = RequestMethod.GET, produces = "application/json")
+    public Chat openChatByHost(@RequestParam("host_id") UUID hid) {
+        try {
+            if (chatRepository.existsByHostId(hid)) {
+                return chatRepository.findByHostId(hid).get(0);
+            }
+        } catch (Exception e) {
+            return null;//result = "Exception: " + e.getMessage();
+        }
+        return null;
     }
 
     @RequestMapping(value = "/chat/members", method = RequestMethod.GET, produces = "application/json")

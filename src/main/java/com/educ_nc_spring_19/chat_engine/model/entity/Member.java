@@ -8,16 +8,14 @@ import java.util.UUID;
 
 @Entity
 @Data
-@Table(name = "Member")
+@Table
 public class Member {
     @Id
     @GeneratedValue
-    @Column(name = "Id")
-    @org.hibernate.annotations.Type(type = "pg-uuid")
+    @Column
     private UUID id;
 
     @Column(name = "User_Id", nullable = false)
-    @org.hibernate.annotations.Type(type = "pg-uuid")
     private UUID userId;
 
     @Basic(optional = false)

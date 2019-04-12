@@ -9,5 +9,9 @@ import java.util.UUID;
 public interface ChatRepository extends CrudRepository<Chat, Long> {
     ArrayList<Chat> findById(UUID id);
 
+    ArrayList<Chat> findByHostId(UUID id);
+
     boolean existsById(UUID id);
+
+    boolean existsByHostId(UUID id);
 }

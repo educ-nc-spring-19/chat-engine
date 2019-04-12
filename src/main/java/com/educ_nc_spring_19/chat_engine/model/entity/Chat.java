@@ -11,13 +11,15 @@ import java.util.UUID;
 
 @Entity
 @Data
-@Table(name = "Chat")
+@Table
 public class Chat {
     @Id
     @GeneratedValue
-    @Column(name = "Id")
-    @org.hibernate.annotations.Type(type = "pg-uuid")
+    @Column
     private UUID id;
+
+    @Column
+    private UUID hostId;
 
     @Basic(optional = false)
     @Column(name = "Date_Creating", nullable = false, columnDefinition = "timestamp with time zone")
