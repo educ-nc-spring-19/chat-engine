@@ -2,6 +2,7 @@ package com.educ_nc_spring_19.chat_engine.controller;
 
 import com.educ_nc_spring_19.chat_engine.model.entity.Chat;
 import com.educ_nc_spring_19.chat_engine.model.entity.Message;
+import com.educ_nc_spring_19.chat_engine.service.MessageServise;
 import com.educ_nc_spring_19.chat_engine.service.repo.ChatRepository;
 import com.educ_nc_spring_19.chat_engine.service.repo.MessageJPARepository;
 import com.educ_nc_spring_19.chat_engine.service.repo.MessageRepository;
@@ -24,6 +25,8 @@ public class MessageController {
     private MessageJPARepository messageJPARepository;
     @Autowired
     private ChatRepository chatRepository;
+    @Autowired
+    private MessageServise messageServise;
 
     @RequestMapping(value = "/message/findById", method = RequestMethod.GET, produces = "application/json")
     public Message getMessageById(@RequestParam("id") UUID id) {
@@ -89,20 +92,20 @@ public class MessageController {
         }
     }
 
+    //лучше использовать /chat/{chatId}/sendMessage из WebSocketController
     @RequestMapping(value = "/message/send", method = RequestMethod.POST, produces = "application/json")
-    public String sendMessage(@RequestParam("user_id") UUID uid, @RequestParam("chat_id") UUID cid,
-                                                @RequestParam("text") String text) {
+    public String sendMessage(@RequestParam("message_type") String type, @RequestParam("user_id") UUID uid,
+                              @RequestParam("chat_id") UUID cid, @RequestParam("text") String text) {
         String result = "success";
         try {
-            Chat chat = chatRepository.findById(cid).get(0);
-            Message message = new Message(chat, uid, text);
-            messageRepository.save(message);
+            messageServise.saveMessage(type, chatRepository.findById(cid).get(0), uid, text);
         } catch (Exception e) {
             result = "Exception: " + e.getMessage();
         }
         return result;
     }
 
+    //лучше использовать /chat/{chatId}/editMessage из WebSocketController
     @RequestMapping(value = "/message/edit", method = RequestMethod.POST, produces = "application/json")
     public String editMessage(@RequestParam("message_id") UUID mid, @RequestParam("user_id") UUID uid,
                                     @RequestParam("text") String text) {
@@ -122,6 +125,7 @@ public class MessageController {
         return result;
     }
 
+    //лучше использовать /chat/{chatId}/deleteMessage из WebSocketController
     @RequestMapping(value = "/message/delete", method = RequestMethod.POST, produces = "application/json")
     public String deleteMessage(@RequestParam("message_id") UUID mid, @RequestParam("user_id") UUID uid) {
         String result = "success";

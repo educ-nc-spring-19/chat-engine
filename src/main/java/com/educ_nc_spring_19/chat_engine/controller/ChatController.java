@@ -2,6 +2,8 @@ package com.educ_nc_spring_19.chat_engine.controller;
 
 import com.educ_nc_spring_19.chat_engine.model.entity.Chat;
 import com.educ_nc_spring_19.chat_engine.model.entity.Member;
+import com.educ_nc_spring_19.chat_engine.service.ChatServise;
+import com.educ_nc_spring_19.chat_engine.service.MemberServise;
 import com.educ_nc_spring_19.chat_engine.service.repo.ChatRepository;
 import com.educ_nc_spring_19.chat_engine.service.repo.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,10 @@ public class ChatController {
     private ChatRepository chatRepository;
     @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    private ChatServise chatServise;
+    @Autowired
+    private MemberServise memberServise;
 
     @RequestMapping(value = "/chat/findById", method = RequestMethod.GET, produces = "application/json")
     public Chat getChatById(@RequestParam("id") UUID id) {
@@ -62,17 +68,14 @@ public class ChatController {
     public String addChat(@RequestParam("owner_id") UUID oid, @RequestParam("user_id") UUID uid) {
         String result = "success";
         try {
-            Chat chat = new Chat();
-            chat.setHostId(oid);
-            chatRepository.save(chat);
-            Member member = new Member(uid, chat);
-            memberRepository.save(member);
+            memberServise.saveMember(uid, chatServise.saveChat(oid));
         } catch (Exception e) {
             result = "Exception: " + e.getMessage();
         }
         return result;
     }
 
+    //лучше юзать метод /app/chat.addUser из WebSocketController
     @RequestMapping(value = "/chat/openByChatId", method = RequestMethod.GET, produces = "application/json")
     public Chat openChatById(@RequestParam("user_id") UUID uid, @RequestParam("chat_id") UUID cid) {
         try {
@@ -80,17 +83,17 @@ public class ChatController {
                 Chat chat = chatRepository.findById(cid).get(0);
                 //тут должен быть рест апи, может ли юзер открыть этот чат (котёл может только сотрудник котла)
                 if (!memberRepository.existsByChatAndUserId(chat, uid)) {
-                    Member member = new Member(uid, chat);
-                    memberRepository.save(member);
+                    memberServise.saveMember(uid, chat);
                 }
                 return chat;
             }
         } catch (Exception e) {
-            return null; //"Exception: " + e.getMessage();
+            return null;
         }
         return null;
     }
 
+    //лучше юзать метод /app/chat.addUser из WebSocketController
     @RequestMapping(value = "/chat/openByHost", method = RequestMethod.GET, produces = "application/json")
     public Chat openChatByHost(@RequestParam("host_id") UUID hid) {
         try {
@@ -98,7 +101,7 @@ public class ChatController {
                 return chatRepository.findByHostId(hid).get(0);
             }
         } catch (Exception e) {
-            return null;//result = "Exception: " + e.getMessage();
+            return null;
         }
         return null;
     }

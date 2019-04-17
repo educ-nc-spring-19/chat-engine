@@ -15,6 +15,15 @@ public class Message {
     @Column
     private UUID id;
 
+    public enum MessageType {
+        CHAT,
+        JOIN,
+        LEAVE
+    }
+
+    @Column(nullable = false, length = 2056)
+    private MessageType type;
+
     @Column(nullable = false, length = 2056)
     private String text;
 
@@ -34,10 +43,24 @@ public class Message {
 
     public Message() {}
 
-    public Message (Chat chat, UUID ownerId, String text) {
+    public Message (String type, Chat chat, UUID ownerId, String text) {
+        this.type = convertType(type);
         this.chat = chat;
         this.ownerId = ownerId;
         this.text = text;
         this.dateSending = OffsetDateTime.now();
+    }
+
+    private MessageType convertType (String type) {
+        switch (type) {
+            case "CHAT" :
+                return MessageType.CHAT;
+            case "JOIN" :
+                return MessageType.JOIN;
+            case "LEAVE" :
+                return MessageType.LEAVE;
+            default:
+                return null;
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.educ_nc_spring_19.chat_engine.controller;
 
 import com.educ_nc_spring_19.chat_engine.model.entity.Chat;
 import com.educ_nc_spring_19.chat_engine.model.entity.Member;
+import com.educ_nc_spring_19.chat_engine.service.MemberServise;
 import com.educ_nc_spring_19.chat_engine.service.repo.ChatRepository;
 import com.educ_nc_spring_19.chat_engine.service.repo.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ public class MemberController {
     private ChatRepository chatRepository;
     @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    private MemberServise memberServise;
 
     @RequestMapping(value = "/member/findById", method = RequestMethod.GET, produces = "application/json")
     public Member getMemberById(@RequestParam("id") UUID id) {
@@ -59,6 +62,7 @@ public class MemberController {
         }
     }
 
+    //лучше использовать /chat/{chatId}/addUser из WebSocketController
     @RequestMapping(value = "/member/add", method = RequestMethod.POST, produces = "application/json")
     public String addMember(@RequestParam("user_id") UUID uid, @RequestParam("chat_id") UUID cid) {
         String result = "success";
@@ -78,6 +82,7 @@ public class MemberController {
         return result;
     }
 
+    //лучше использовать /chat/{chatId}/removeUser из WebSocketController
     @RequestMapping(value = "/member/remove", method = RequestMethod.POST, produces = "application/json")
     public String removeMember(@RequestParam("user_id") UUID uid, @RequestParam("chat_id") UUID cid) {
         String result = "success";
@@ -91,6 +96,7 @@ public class MemberController {
         return result;
     }
 
+    //лучше использовать /chat/{chatId}/removeUser из WebSocketController
     @RequestMapping(value = "/member/leave", method = RequestMethod.POST, produces = "application/json")
     public String leaveFromChat(@RequestParam("user_id") UUID uid, @RequestParam("chat_id") UUID cid) {
         String result = "success";
